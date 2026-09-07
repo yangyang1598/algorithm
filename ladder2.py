@@ -11,7 +11,7 @@ class MakeLadder:
 
         self.input_arr=list(map(int,input("정답값을 입력하세요\n").split(",")))
         self.answer=self.make_ladder(self.input_arr)
-        for i in range(3):
+        for i in range(1):
             if self.answer!=self.number:
                 self.answer=self.make_ladder(self.answer)
         
@@ -60,23 +60,22 @@ class MakeLadder:
         
     def logic_ladder(self,arrs):
         non_dupl=[]
-        dupl_temp=[]
-        
-
-        for j in range(max(len(second_layer) for second_layer in arrs)):
+        prev_position=[]
+        while arrs:
             sample=[]
+            dupl_temp=[]
             for i in (range(len(arrs))):
-                if j < len(arrs[i]):
-                    sample.append(arrs[i][j])
-                else:
-                    pass
-            sample=sample+non_dupl
+                sample.append(arrs[i][0])
             print(sample,"sample")
             tupple_sam=[tuple(item) for item in sample]
             counts=Counter(tupple_sam)
             dupl=[list(item) for item,count in counts.items() if count>1]
             non_dupl=[list(item) for item,count in counts.items() if count==1]
-            
+            for val in dupl:
+                position=[i for i, x in enumerate(sample) if x == val]
+                print(position,"position")
+                for pos in position:
+                    arrs[pos].pop(0)
 
             if len(dupl)>1:
                 for indx,num in enumerate(dupl):
@@ -91,19 +90,23 @@ class MakeLadder:
                 if len(dupl_temp)>1:
                     dupl=(np.array(dupl[0])|(np.array(dupl[1]))).tolist()
                     self.ladder.append(dupl)
-            else:
-                chk=1
+            elif len(dupl)==1:
                 dupl_tmp=dupl[0].index(1)
                 print(dupl_tmp,"dupl_tmp")
+                chx=0
                 for inx,num in enumerate(non_dupl):
                     tmp=num.index(1)
                     if tmp+2 ==dupl_tmp or tmp-2 == dupl_tmp:
                         dupl=(np.array(dupl[0])|(np.array(non_dupl[inx]))).tolist()
-                        self.ladder.append(dupl)
-                        chk=0
-                if chk==1:
+                        print(dupl,"개조된 dupl")
+                        for val in num:
+                            position=[i for i, x in enumerate(sample) if x == val]
+                            print(position,"position")
+                            for pos in position:
+                                arrs[pos].pop(0)
+                        chx=1
+                if chx!=1:
                     self.ladder.append(dupl[0])
-             
         if non_dupl:
             for non in non_dupl:
                 self.ladder.append(non)
