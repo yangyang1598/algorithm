@@ -10,17 +10,20 @@ class MakeLadder:
     def main(self):
 
         self.input_arr=list(map(int,input("정답값을 입력하세요\n").split(",")))
-        self.answer=self.make_ladder(self.input_arr)
+        self.ladder = []  # 사다리를 누적할 리스트 초기화
+        current_input = self.input_arr
         while True:
+            current_input, new_lines = self.make_ladder(current_input)
+            self.ladder.extend(new_lines)  # 새로운 사다리 줄을 기존에 추가
+            self.answer = self.try_ladder(self.input_arr, self.ladder)
             if self.answer == self.number:
                 break
-            self.answer=self.make_ladder(self.answer)
+        # print("최종 사다리:", self.ladder)
+        # print("최종 결과:", self.answer)
         self.draw_ladder(self.ladder)
 
     def make_ladder(self,input_arr):
-        self.ladder=[]
         self.arr=[0,0,0,0,0]
-        print(input_arr,"input_arr")
         priority_arrs=[[],[],[],[],[]]
         for i in range(5):
             for j in range(5):
@@ -58,9 +61,9 @@ class MakeLadder:
                                 priority_arrs[i].append(self.arr)
                                 self.arr=[0,0,0,0,0]
         
-        print(priority_arrs,"all text")
-        ans=self.logic_ladder(priority_arrs, input_arr)
-        return ans
+        # print(priority_arrs,"all text")
+        new_lines, ans = self.logic_ladder(priority_arrs, input_arr)
+        return ans, new_lines  
 
     def logic_ladder(self, arrs, input_arr):
         """
@@ -68,8 +71,8 @@ class MakeLadder:
         1) 각 행의 1순위(첫 값)들끼리 비교했을 때 동일한(중복된) 값이 있으면:
            - 중복 그룹 밖에서, 아직 2순위 이상이 남아있고(len>1) 중복 위치와
              인접하지 않은(인덱스 차이 >= 2) 값을 가진 행을 찾아 결합(OR)해서
-             self.ladder에 추가.
-           - 그런 행이 없으면 중복값 자체를 그대로 self.ladder에 추가.
+             new_ladder에 추가.
+           - 그런 행이 없으면 중복값 자체를 그대로 new_ladder에 추가.
            - 어느 경우든 중복 그룹의 각 행 + (있다면) 결합된 행에서 1개씩 pop.
         2) 중복이 없으면, 앞에서부터(원 배열 기준 우선순위 순서로) 훑어서
            인접하지 않은(인덱스 차이 >= 2) 첫 번째 쌍을 찾아 결합해서 추가하고
@@ -77,7 +80,7 @@ class MakeLadder:
         3) 결합 가능한 쌍이 전혀 없으면(전부 인접), 가장 먼저 나온(원 배열
            기준 우선순위가 높은) 값 하나만 그대로 추가하고 그 행만 pop.
         """
-        self.ladder = []
+        new_ladder = []  # self.ladder 대신 지역변수로 새로운 줄만 누적
         while any(arr for arr in arrs):
             heads = [
                 (row_index, row[0])
@@ -114,12 +117,12 @@ class MakeLadder:
                 if candidate_row is not None:
                     candidate_value = arrs[candidate_row][0]
                     merged = (np.array(dup_value) | np.array(candidate_value)).tolist()
-                    self.ladder.append(merged)
+                    new_ladder.append(merged)
                     for row_index in dup_rows:
                         arrs[row_index].pop(0)
                     arrs[candidate_row].pop(0)
                 else:
-                    self.ladder.append(dup_value)
+                    new_ladder.append(dup_value)
                     for row_index in dup_rows:
                         arrs[row_index].pop(0)
                 continue
@@ -138,24 +141,22 @@ class MakeLadder:
             if merge_pair:
                 row_i, value_i, row_j, value_j = merge_pair
                 merged = (np.array(value_i) | np.array(value_j)).tolist()
-                self.ladder.append(merged)
+                new_ladder.append(merged)
                 arrs[row_i].pop(0)
                 arrs[row_j].pop(0)
                 continue
 
             # 3) 결합 불가 -> 가장 우선순위 높은(먼저 나온) 값 하나만 적용
             row_index, value = heads[0]
-            self.ladder.append(value)
+            new_ladder.append(value)
             arrs[row_index].pop(0)
 
-        print(self.ladder,"ladder")
-        ans=self.try_ladder(input_arr,self.ladder)
-        print(ans,"ans")
-        return ans
+        # print(new_ladder,"새로 추가된 ladder 줄들")
+        ans = self.try_ladder(input_arr, new_ladder)
+        return new_ladder, ans  # (새로운 사다리 줄, 변환 결과) 반환
     
     def try_ladder(self,number,ladder):
         solution=[0,0,0,0,0]
-        print(len(ladder),"len_ladder")
         for i in range(len(ladder)):
             for j in range(5):      
                 # print(i,j,"i,j")
@@ -172,6 +173,18 @@ class MakeLadder:
             solution=[0,0,0,0,0]
         return number
 
+    def draw_ladder(self,ladder):
+        ladder_original=[]
+        for i in range(len(ladder),0,-1):
+            ladder_original.append(ladder[i-1])
+        print("사다리 출력")
+        for ladder in ladder_original:
+            for i in range(5):
+                if ladder[i]==1:
+                    print("├",end="")
+                else:
+                    print("│",end="")
+            print()
 if __name__ == "__main__":
     ml=MakeLadder()
     ml.main()
