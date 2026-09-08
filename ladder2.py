@@ -50,14 +50,14 @@ class MakeLadder:
                                 priority_arrs[i].append(self.arr)
                                 self.arr=[0,0,0,0,0]
                     else:
-                        if i==4:
+                        if i==0:
                             for x in range(2):
-                                self.arr[i-1]=1
+                                self.arr[i]=1
                                 priority_arrs[i].append(self.arr)
                                 self.arr=[0,0,0,0,0]
                         else:
                             for x in range(2):
-                                self.arr[i]=1
+                                self.arr[i-1]=1
                                 priority_arrs[i].append(self.arr)
                                 self.arr=[0,0,0,0,0]
         
