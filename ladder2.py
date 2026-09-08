@@ -21,6 +21,8 @@ class MakeLadder:
                 break
         # print("최종 사다리:", self.ladder)
         # print("최종 결과:", self.answer)
+        # print("최종 사다리:", self.ladder)
+        # print("최종 결과:", self.answer)
         self.draw_ladder(self.ladder)
 
     def make_ladder(self,input_arr):
@@ -56,17 +58,20 @@ class MakeLadder:
                                 priority_arrs[i].append(self.arr)
                                 self.arr=[0,0,0,0,0]
                     else:
-                        if i==4:
-                            for x in range(2):
-                                self.arr[i-1]=1
-                                priority_arrs[i].append(self.arr)
-                                self.arr=[0,0,0,0,0]
-                        else:
+                        if i==0:
                             for x in range(2):
                                 self.arr[i]=1
                                 priority_arrs[i].append(self.arr)
                                 self.arr=[0,0,0,0,0]
+                        else:
+                            for x in range(2):
+                                self.arr[i-1]=1
+                                priority_arrs[i].append(self.arr)
+                                self.arr=[0,0,0,0,0]
         
+        # print(priority_arrs,"all text")
+        new_lines, ans = self.logic_ladder(priority_arrs, input_arr)
+        return ans, new_lines  
         # print(priority_arrs,"all text")
         new_lines, ans = self.logic_ladder(priority_arrs, input_arr)
         return ans, new_lines  
@@ -118,10 +123,12 @@ class MakeLadder:
                     candidate_value = arrs[candidate_row][0]
                     merged = (np.array(dup_value) | np.array(candidate_value)).tolist()
                     new_ladder.append(merged)
+                    new_ladder.append(merged)
                     for row_index in dup_rows:
                         arrs[row_index].pop(0)
                     arrs[candidate_row].pop(0)
                 else:
+                    new_ladder.append(dup_value)
                     new_ladder.append(dup_value)
                     for row_index in dup_rows:
                         arrs[row_index].pop(0)
@@ -142,6 +149,7 @@ class MakeLadder:
                 row_i, value_i, row_j, value_j = merge_pair
                 merged = (np.array(value_i) | np.array(value_j)).tolist()
                 new_ladder.append(merged)
+                new_ladder.append(merged)
                 arrs[row_i].pop(0)
                 arrs[row_j].pop(0)
                 continue
@@ -149,8 +157,12 @@ class MakeLadder:
             # 3) 결합 불가 -> 가장 우선순위 높은(먼저 나온) 값 하나만 적용
             row_index, value = heads[0]
             new_ladder.append(value)
+            new_ladder.append(value)
             arrs[row_index].pop(0)
 
+        # print(new_ladder,"새로 추가된 ladder 줄들")
+        ans = self.try_ladder(input_arr, new_ladder)
+        return new_ladder, ans  # (새로운 사다리 줄, 변환 결과) 반환
         # print(new_ladder,"새로 추가된 ladder 줄들")
         ans = self.try_ladder(input_arr, new_ladder)
         return new_ladder, ans  # (새로운 사다리 줄, 변환 결과) 반환
@@ -173,6 +185,18 @@ class MakeLadder:
             solution=[0,0,0,0,0]
         return number
 
+    def draw_ladder(self,ladder):
+        ladder_original=[]
+        for i in range(len(ladder),0,-1):
+            ladder_original.append(ladder[i-1])
+        print("사다리 출력")
+        for ladder in ladder_original:
+            for i in range(5):
+                if ladder[i]==1:
+                    print("├",end="")
+                else:
+                    print("│",end="")
+            print()
     def draw_ladder(self,ladder):
         ladder_original=[]
         for i in range(len(ladder),0,-1):
