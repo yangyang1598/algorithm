@@ -82,7 +82,7 @@ class MakeLadder:
         
         new_ladder = []  #사다리 저장 리스트
         original_lengths = [len(arr) for arr in arrs]
-        print(original_lengths,"original_lengths")
+
         while any(arr for arr in arrs):
             
             heads = [
@@ -91,7 +91,7 @@ class MakeLadder:
                 if row
             ]
             positions = {row_index: value.index(1) for row_index, value in heads}
-            print(positions,"positions")
+
             # 1) 1순위 값들 중 중복 확인
             grouped = {}
             for row_index, value in heads:
